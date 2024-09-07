@@ -4,3 +4,5 @@
 .Ruserdata
 _quarto.yml
 /.quarto/
+/IATPUIB_files/
+.gitignore
