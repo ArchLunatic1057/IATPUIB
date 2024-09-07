@@ -2,7 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-_quarto.yml
 /.quarto/
-/IATPUIB_files/
+_quarto.yml
+IATPUIB.Rproj
 .gitignore
