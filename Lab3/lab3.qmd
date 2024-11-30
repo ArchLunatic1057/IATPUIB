@@ -1,0 +1,159 @@
+---
+title: "Практическая работа №3"
+author: "Arch"
+format:
+  md:
+    output-file: README.md
+  html: 
+    output-file: README.html
+---
+
+# Основы обработки данных с помощью R и Dplyr
+
+## Цель работы
+
+1. Развить практические навыки использования языка программирования R для обработки данных
+2. Закрепить знания базовых типов данных языка R
+3. Развить практические навыки использования функций обработки данных пакета `dplyr` – функции `select(), filter(), mutate(), arrange(), group_by()`
+
+## ️Исходные данные
+
+1.  R 4.4.1;
+2.  RStudio 2024.04.2+764;
+
+## Решение задач
+
+### 0. Загрузка необходимых библиотек.
+
+```{r}
+library(nycflights13)
+library(dplyr)
+```
+
+### 1. Сколько встроенных в пакет nycflights13 датафреймов?
+
+```{r}
+nycflights13_airlines <- nycflights13::airlines
+nycflights13_airports <- nycflights13::airports
+nycflights13_flights <- nycflights13::flights
+nycflights13_planes <- nycflights13::planes
+nycflights13_weather <- nycflights13::weather
+```
+
+### 2. Сколько строк в каждом датафрейме?
+
+```{r}
+airlines %>% nrow()
+airports %>% nrow()
+flights %>% nrow()
+planes %>% nrow()
+weather %>% nrow()
+```
+
+### 3. Сколько столбцов в каждом датафрейме?
+
+```{r}
+airports %>% ncol()
+airlines %>% ncol()
+flights %>% ncol()
+planes %>% ncol()
+weather %>% ncol()
+```
+
+### 4. Как просмотреть примерный вид датафрейма?
+
+```{r}
+airports %>% glimpse()
+airlines %>% glimpse()
+flights %>% glimpse()
+planes %>% glimpse()
+weather %>% glimpse()
+```
+
+### 5. Сколько компаний-перевозчиков (carrier) учитывают эти наборы данных (представлено в наборах данных)?
+
+```{r}
+airlines %>%
+  group_by(carrier) %>%
+  summarise() %>%
+  nrow()
+```
+
+### 6. Сколько рейсов принял аэропорт John F Kennedy Intl в мае?
+
+```{r}
+flights %>%
+  filter(month == 5 & origin == "JFK") %>%
+  nrow()
+```
+
+### 7. Какой самый северный аэропорт?
+
+```{r}
+airports %>%
+  arrange(desc(lat)) %>%
+  slice(1)
+```
+
+### 8. Какой аэропорт самый высокогорный (находится выше всех над уровнем моря)?
+
+```{r}
+airports %>%
+  arrange(desc(alt)) %>%
+  slice(1)
+```
+
+### 9. Какие бортовые номера у самых старых самолетов?
+
+```{r}
+planes %>%
+  arrange(year) %>%
+  slice(1:10) %>%
+  pull(tailnum)
+```
+
+### 10. Какая средняя температура воздуха была в сентябре в аэропорту John F Kennedy Intl (в градусах Цельсия).
+
+```{r}
+a <- weather %>%
+  filter(!is.na(temp) & month == 9 & origin == 'JFK') %>%
+  summarize(ср=mean(temp))
+a <- (5/9)*(a-32)
+pull(a)
+```
+
+### 11. Самолеты какой авиакомпании совершили больше всего вылетов в июне?
+
+```{r}
+b<- flights %>%
+  filter(month == 6) %>%
+  group_by(carrier) %>%
+  summarise("coun"=n()) %>%
+  arrange(desc(coun)) %>%
+  slice(1) %>%
+  select(carrier)
+
+airlines %>%
+  filter(carrier == b$carrier) %>%
+  select(name)
+```
+
+### 12. Самолеты какой авиакомпании задерживались чаще других в 2013 году?
+
+```{r}
+c<- flights %>%
+  filter(arr_delay > 0 & year == 2013) %>%
+  group_by(carrier) %>%
+  summarise("coun"=n()) %>%
+  arrange(desc(coun)) %>%
+  slice(1) %>%
+  select(carrier)
+
+airlines %>%
+  filter(carrier == c$carrier) %>%
+  select(name)
+```
+
+## ️Вывод
+
+В результате проделанной работы, были развиты практические навыки использования языка программирования R для обработки данных, закреплены знания базовых типов данных языка R, а также развиты практические навыки использования функций обработки данных пакета dplyr.

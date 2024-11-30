@@ -1,0 +1,92 @@
+---
+title: "Практическая работа №4"
+author: "Arch"
+format:
+  md:
+    output-file: README.md
+  html: 
+    output-file: README.html
+---
+
+# Использование технологии Yandex Query для анализа данных сетевой активности
+
+## Цель работы
+
+1.  Изучить возможности технологии Yandex Query для анализа структурированных наборов данных
+2.  Получить навыки построения аналитического пайплайна для анализа данных с помощью сервисов Yandex Cloud
+3.  Закрепить практические навыки использования SQL для анализа данных сетевой активности в сегментированной корпоративной сети
+
+## ️Исходные данные
+
+1.  R 4.4.1;
+2.  RStudio 2024.04.2+764;
+
+## Решение задачи
+
+### 1. Известно, что IP адреса внутренней сети начинаются с октетов, принадлежащих интервалу \[12-14\]. Определите количество хостов внутренней сети, представленных в датасете.
+
+```{sql}
+SELECT COUNT(*) AS Count_Of_Hosts
+FROM
+    (
+    SELECT DISTINCT IP
+    FROM
+        (SELECT dst AS IP
+        FROM `yaqry1mdataset_sk`
+        WHERE dst LIKE '12.%' OR dst LIKE '13.%' OR dst LIKE '14.%'
+
+        UNION
+
+        SELECT src AS IP
+        FROM `yaqry1mdataset_sk`
+        WHERE src LIKE '12.%' OR src LIKE '13.%' OR src LIKE '14.%')
+    );
+```
+
+```{r}
+1000
+```
+
+![](./img/1.png)
+
+### 2. Определите суммарный объем исходящего трафика
+
+```{sql}
+SELECT SUM(bytes) AS Total_volume_of_outgoing_traffic
+FROM
+    (
+    SELECT bytes, src, dst
+    FROM `yaqry1mdataset_sk`
+    WHERE (src LIKE '12.%' OR src LIKE '13.%' OR src LIKE '14.%') 
+        AND (dst NOT LIKE '12.%' AND dst NOT LIKE '13.%' AND dst NOT LIKE '14.%')
+    );
+```
+
+```{r}
+12459379906
+```
+
+![](./img/2.png)
+
+### 3. Определите суммарный объем входящего трафика
+
+```{sql}
+SELECT SUM(bytes) AS Total_volume_of_incomming_traffic
+FROM
+    (
+    SELECT bytes, dst, src
+    FROM `yaqry1mdataset_sk`
+    WHERE (dst LIKE '12.%' OR dst LIKE '13.%' OR dst LIKE '14.%') 
+        AND (src NOT LIKE '12.%' AND src NOT LIKE '13.%' AND src NOT LIKE '14.%')
+    );
+```
+
+```{r}
+6726396441
+```
+
+![](./img/3.png)
+
+## ️Вывод
+
+В результате проделанной работы, были изучены возможности технологии Yandex Query для анализа структурированных наборов данных, получены навыки построения аналитического пайплайна для анализа данных с помощью сервисов Yandex Cloud, и, наконец, закрпелены практические навыки использования SQL для анализа данных сетевой активности в сегментированной корпоративной сети.
